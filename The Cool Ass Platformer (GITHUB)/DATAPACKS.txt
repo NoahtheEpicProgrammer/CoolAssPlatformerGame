@@ -1,0 +1,22 @@
+This engine uses datapacks to store data so users can create custom content. On content refresh (ex. startup), the engine
+caches all of the active datapacks, in order. Later-cached packs override content from earlier packs.
+
+The engine can also be told to not cache datapack(s), but to lazily cache them whenever a resource is requested.
+
+
+Structure of a Data Pack:
+	
+	pack/							|	Top-level folder (this would be in the datapacks folder)
+		game/						|	Game folder contains all of the .class files that 
+			loader.class			|	Provides information for the datapack loader.
+			... other game files	|	
+									|	If desired, subfolders can be used. They do not have to match the package names
+									|	of the class files.
+			levels/					|	For example, this folder could contain all of the level classes.
+			characters/				|	... and this folder could contain all of the character classes.
+		sound/						|	Contains all sound/music files. Sounds are accessed by the string:
+			test.wav				|		"test"
+			human/pain/hurt01.wav	|		"human.pain.hurt01"
+				
+		textures/					|	Contains all texture files. Textures are accessed just like sounds:
+			

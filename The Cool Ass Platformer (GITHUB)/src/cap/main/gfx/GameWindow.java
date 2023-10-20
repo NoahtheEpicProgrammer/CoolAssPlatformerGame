@@ -7,7 +7,6 @@ import java.awt.image.*;
 import javax.swing.*;
 
 import cap.main.*;
-import cap.main.input.*;
 
 public class GameWindow
 {

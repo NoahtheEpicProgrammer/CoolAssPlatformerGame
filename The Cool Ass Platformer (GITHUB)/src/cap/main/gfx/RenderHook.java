@@ -8,6 +8,6 @@ import java.awt.*;
 public interface RenderHook
 {
 	
-	public void draw(Graphics2D g);
+	public void draw(Graphics2D g, GameRenderer renderer);
 	
 }

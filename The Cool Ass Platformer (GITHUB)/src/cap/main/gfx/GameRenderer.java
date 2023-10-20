@@ -2,11 +2,13 @@ package cap.main.gfx;
 
 import java.awt.*;
 import java.awt.geom.*;
+import java.awt.image.*;
 import java.util.*;
 import java.util.Map.*;
 
 /**
  * Specializes in rendering the game with customizing the rendering bounds.
+ * Can also be used with rendering to texture.
  */
 public class GameRenderer
 {
@@ -26,6 +28,13 @@ public class GameRenderer
 		
 		hook_lookup = new HashMap<String, RenderHook>();
 		render_hooks = new ArrayList<RenderHook>();
+	}
+	
+	public GameRenderer(BufferedImage buffer)
+	{
+		
+		
+		
 	}
 	
 	// -- Hooks and (un)hooking operations -- //
@@ -98,7 +107,7 @@ public class GameRenderer
 		
 		// Main does not get any transform applied to it.
 		// Only the next hook draw calls are.
-		hook.draw(g);
+		hook.draw(g, this);
 	}
 	
 	public final void RenderHook(Graphics2D g, String id)
@@ -133,7 +142,7 @@ public class GameRenderer
 		int old_irecty2 = irect_y2;
 		
 		transform(g);
-		hook.draw(g);
+		hook.draw(g, this);
 		
 		// restore previous transform and state
 		g.setTransform(old_tx);

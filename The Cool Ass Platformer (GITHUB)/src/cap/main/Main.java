@@ -6,7 +6,7 @@ import cap.main.game.*;
 import cap.main.gfx.*;
 import cap.main.input.*;
 
-public class Main
+public class Main implements Runnable
 {
 	private Config			config;
 	
@@ -23,12 +23,8 @@ public class Main
 		game_window = new GameWindow(config, "Lolol");
 		
 		game_renderer = new GameRenderer(game_window.GetGameCanvas());
-		RenderHook test = (g) -> {
-			g.setColor(Color.white);
-			g.fillRect(-32, -48, 64, 96);
-		};
 		
-		game_renderer.Hook("main", (g) -> {
+		game_renderer.Hook("main", (g, renderer) -> {
 			// clear
 			Canvas game_canvas = game_window.GetGameCanvas();
 			
@@ -37,20 +33,48 @@ public class Main
 			
 			// Render
 			game_renderer.SetRenderBounds_Rect(0, 0, 800, 600);
-			game_renderer.RenderHook(g, test);
+			game_world.Render(g, renderer);
 		});
 		
 		input_processor = new InputProcessor();
 		input_processor.Attach(game_window.GetGameCanvas());
 		
-		game_world = new GameWorld();
+		game_world = new GameWorld(input_processor);
+		
+		Thread thread = new Thread(this);
+		thread.start();
+	}
+	
+	@Override public void run()
+	{
+		long frame_time = 1000000000 / 60;
+		long last_time = System.nanoTime();
+		
+		System.out.println("Frame Time (ms): " + frame_time / 1000000);
+		
+		
+		long timer = System.currentTimeMillis();
+		int frames = 0;
 		
 		while (true)
 		{
+			long now = System.nanoTime();
+//			System.out.println(now + " / " + (last_time + frame_time));
+			if (last_time + frame_time > now) continue;
+			
 			tick();
 			render();
 			
-			try { Thread.sleep(16); } catch (InterruptedException e) { e.printStackTrace(); }
+			frames++;
+			
+			if (timer + 1000 < System.currentTimeMillis())
+			{
+				System.out.println("FPS: " + frames);
+				frames = 0;
+				timer += 1000;
+			}
+			
+			last_time = now;
 		}
 	}
 	
@@ -72,6 +96,7 @@ public class Main
 		game_renderer.Render(g);
 		
 		game_window.EndFrame();
+		Toolkit.getDefaultToolkit().sync();
 	}
 	
 	// Java Entry Point
