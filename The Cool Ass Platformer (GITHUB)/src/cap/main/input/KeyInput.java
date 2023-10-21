@@ -14,6 +14,21 @@ public class KeyInput extends KeyAdapter implements InputDevice
 	private byte[]				keys;					// Regular threads.
 	private boolean[]			awtkeys, keysnap;		// AWT threads
 	
+	// KEY MAPPING: (TODO)
+	//		  0      : The first key is an unmapped key.
+	//		  1      : Escape key.
+	//		  2 -  13: Function keys (F1 - F12).
+	//		 14	-  16: Printscreen, Scroll Lock, Pause/Break
+	//		 17 -  30: ~, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, -, =, Backspace
+	//		 31 -  44: Tab, Q, W, E, R, T, Y, U, I, O, P, [, ], \
+	//		 45 -  57: Caps Lock, A, S, D, F, G, H, J, K, L, ;, ', Enter
+	//		 58 -  70: LShift, Z, X, C, V, B, N, M, ,, ., /, RShift           Yes, that is a comma entered in a list delimited by commas.
+	//		 73 -  80: LCtrl, LSuper, LAlt, Space, RAlt, RSuper, Context Menu Key?, RCtrl
+	//		 81 -  86: Insert, Home, Page Up, Delete, End, Page Down
+	//		 87 -  90: Up, Left, Down, Right
+	//		 91 - 107: Numpad keys: Lock, /, *, -, 7, 8, 9, +, 4, 5, 6, 1, 2, 3, Enter, 0, .
+	
+	
 	public KeyInput()
 	{
 		keys = new byte[256];
@@ -87,4 +102,45 @@ public class KeyInput extends KeyAdapter implements InputDevice
 		if (keycode < 256 && awtkeys[keycode])
 			awtkeys[keycode] = false;
 	}
+	
+	// why the fuck is there no differentiation between different locations of a key.
+	// I guess live by the sword, die by the sword. I'm the one using GUI for a game.
+	public static final int translatequick(int keycode, int where)
+	{
+		switch (where)
+		{
+			case KeyEvent.KEY_LOCATION_RIGHT:
+				if (keycode == KeyEvent.VK_SHIFT)
+				{
+					return 1;
+				} else if (keycode == KeyEvent.VK_CONTROL)
+				{
+					return 2;
+					
+				} else if (keycode == KeyEvent.VK_ALT)
+				{
+					
+					return 4;
+				}
+		
+			default:
+				return keycode;
+		}
+	}
+	
+	public static final int Translate(int keycode, int where)
+	{
+		switch(keycode)
+		{
+			
+			
+			default:
+				
+				
+				
+				return keycode;
+		}
+		
+	}
+	
 }

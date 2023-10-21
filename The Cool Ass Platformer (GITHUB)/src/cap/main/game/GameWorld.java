@@ -8,6 +8,7 @@ import java.util.List;
 
 import cap.main.game.controller.*;
 import cap.main.game.object.*;
+import cap.main.game.object.box.*;
 import cap.main.game.object.character.*;
 import cap.main.game.object.character.Character;
 import cap.main.gfx.*;
@@ -25,6 +26,11 @@ public class GameWorld implements RenderHook
 	private HashMap<String, List<GameObject>>						objects_by_name;
 	private HashMap<Class<? extends GameObject>, List<GameObject>>	objects_by_type;
 	
+	// -- Physics -- //
+	private static final float										pixels_per_meter = 48f;
+	private float													gravity_x;
+	private float													gravity_y;
+	
 	// -- Camera -- //
 	private int														camera_x, camera_y;
 	private boolean													camera_smooth;
@@ -37,6 +43,12 @@ public class GameWorld implements RenderHook
 	
 	// -- Render Hooks -- //
 	
+	private void create_platform(int x, int y, int w, int h)
+	{
+		
+		
+	}
+	
 	public GameWorld(InputProcessor input_processor)
 	{
 		this.input_processor = input_processor;
@@ -47,13 +59,37 @@ public class GameWorld implements RenderHook
 		objects_by_type = new HashMap<Class<? extends GameObject>, List<GameObject>>();
 		
 		// testing
+		
+		camera_smooth = true;
 		bg_enable = true;
 		bg_scale = 2;
 		bg_cache = TextureHandler.LoadTexture("bg");
 		
+		SetGravityYinMpS(1.0f);
+		
 		current_player = new PlayerTest(this, "Player");
 		objects.add(current_player);
+		objects.add(new BasicBox(this, "", 100, 0, 50, 500, true));
+		objects.add(new BasicBox(this, "", 0, 275, 500, 50, true));
+		objects.add(new BasicBox(this, "", -350, 225, 100, 50, true));
+		objects.add(new BasicBox(this, "", 0, 275, 500, 50, true));
+		objects.add(new BasicBox(this, "", -96, -96, 32, 32, false));
 	}
+	
+	
+	/**
+	 * Fills a list full of objects that occupy the sectors the object is in.
+	 * @param object
+	 * @param out
+	 */
+	public final void GetGameObjectsInSector(GameObject object, List<GameObject> out)
+	{
+		for (GameObject obj : objects)
+			if (obj.equals(object))	continue;
+			else					out.add(obj);
+		
+	}
+	
 	
 	private final void update_camera()
 	{
@@ -77,13 +113,18 @@ public class GameWorld implements RenderHook
 		int dx = 0;
 		int dy = 0;
 		
+		int movemod = 1;
+		
 		if (input_processor.GetKeyInput().IsKeyDown(KeyEvent.VK_W)) dy--;
 		if (input_processor.GetKeyInput().IsKeyDown(KeyEvent.VK_S)) dy++;
 		if (input_processor.GetKeyInput().IsKeyDown(KeyEvent.VK_A)) dx--;
 		if (input_processor.GetKeyInput().IsKeyDown(KeyEvent.VK_D)) dx++;
 		
+		if (input_processor.GetKeyInput().IsKeyDown(KeyEvent.VK_SHIFT)) movemod++;
+		if (input_processor.GetKeyInput().IsKeyDown(KeyEvent.VK_ALT)) movemod--;
+		
 		// Control the player
-		current_player.Move(dx, dy);
+		current_player.Move(dx, dy, movemod);
 		
 		for (GameObject obj : objects) obj.Update();
 		for (GameObject obj : objects) obj.PostUpdate();
@@ -114,4 +155,15 @@ public class GameWorld implements RenderHook
 		
 	}
 	
+	public final void SetGravityX(float ax) { this.gravity_x = ax; }
+	public final void SetGravityY(float ay) { this.gravity_y = ay; }
+	
+	public final void SetGravityXinMpS(float ax_mps) { this.gravity_x = (ax_mps * pixels_per_meter) / 60f; }
+	public final void SetGravityYinMpS(float ay_mps) { this.gravity_y = (ay_mps * pixels_per_meter) / 60f; }
+	
+	public final float GetGravityX() { return gravity_x; }
+	public final float GetGravityY() { return gravity_y; }
+	
+	public final float ConvertMetersToPixels(float meters) { return meters * pixels_per_meter; }
+	public final float ConvertMpSToPpS(float mps) { return (mps * pixels_per_meter) / 60f; }
 }

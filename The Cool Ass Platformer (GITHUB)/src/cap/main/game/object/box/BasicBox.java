@@ -11,23 +11,24 @@ public class BasicBox extends GameObject
 	private Color color;
 	
 	
-	public BasicBox(GameWorld world, String name, float x, float y, float w, float h)
+	public BasicBox(GameWorld world, String name, float x, float y, float w, float h, boolean is_static)
 	{
-		super(world, name);
+		super(world, name, x, y);
 		SetCollisionSize(w, h);
+		SetStatic(is_static);
 		
 		color = Color.gray;
 	}
 
 	@Override public void draw(Graphics2D g, GameRenderer renderer)
 	{
-		// TODO Auto-generated method stub
-		
+		g.setColor(color);
+		FillRect(g);
 	}
 
 	@Override protected void obj_update()
 	{
-		// TODO Auto-generated method stub
+		if (get_cinfo().IsCollidingDown()) AccelerateToVelocityX(0, 0.15f);
 		
 	}
 	

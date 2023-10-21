@@ -7,6 +7,8 @@ import cap.main.game.object.*;
 public abstract class Character extends GameObject
 {
 	
+	private boolean squashed_horizontally;
+	private boolean squashed_vertically;
 	private boolean grounded;
 	
 	public Character(GameWorld parent, String name)
@@ -18,6 +20,8 @@ public abstract class Character extends GameObject
 	@Override protected final void obj_update()
 	{
 		// Update the character's state. Are we on the ground?
+		if (get_cinfo().IsCollidingDown())  grounded = true;
+		else								grounded = false;
 		
 		char_update();
 	}
@@ -28,7 +32,7 @@ public abstract class Character extends GameObject
 	 * @param x
 	 * @param y
 	 */
-	public abstract void Move(float x, float y);
+	public abstract void Move(float x, float y, float movemodifier);
 	/**
 	 * Instructs the character to aim at the point (x, y).
 	 * @param x
@@ -50,4 +54,7 @@ public abstract class Character extends GameObject
 	public abstract void RecvImpulse(float x, float y);
 	public abstract void RecvImpulse_Lazy(float x, float y, float magn);
 	
+	
+	protected final boolean char_grounded() { return grounded; }
+	public boolean IsGrounded() { return grounded; }
 }
